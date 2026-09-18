@@ -1,76 +1,12 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api';
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Bio endpoints
-export const getBio = () => apiClient.get('/bio');
-
-// Artwork endpoints
-export const getArtworks = (params = {}) =>
-  apiClient.get('/artworks', { params }).then((res) => res.data);
-
-export const getArtworkById = (id) =>
-  apiClient.get(`/artworks/${id}`).then((res) => res.data);
-
-export const createArtwork = (data, token) =>
-  apiClient.post('/admin/artworks', data, {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.data);
-
-export const updateArtwork = (id, data, token) =>
-  apiClient.put(`/admin/artworks/${id}`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.data);
-
-export const deleteArtwork = (id, token) =>
-  apiClient.delete(`/admin/artworks/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.data);
-
-// Contact endpoints
-export const submitContactForm = (data) =>
-  apiClient.post('/contact', data).then((res) => res.data);
-
-// Order endpoints
-export const createOrder = (data) =>
-  apiClient.post('/orders', data).then((res) => res.data);
-
-export const getOrderById = (orderId) =>
-  apiClient.get(`/orders/track/${encodeURIComponent(orderId)}`).then((res) => res.data);
-
-// Admin endpoints
-export const adminLogin = (data) =>
-  apiClient.post('/admin/login', data).then((res) => res.data);
-
-export const adminRegister = (data) =>
-  apiClient.post('/admin/register', data).then((res) => res.data);
-
-export const getContacts = (token) =>
-  apiClient.get('/admin/contacts', {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.data);
-
-export const updateContactStatus = (id, status, token) =>
-  apiClient.put(
-    `/admin/contacts/${id}`,
-    { status },
-    { headers: { Authorization: `Bearer ${token}` } }
-  ).then((res) => res.data);
-
-export const getAdminOrders = (token) =>
-  apiClient.get('/admin/orders', {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((res) => res.data);
-
-export const updateOrderStatus = (id, status, token) =>
-  apiClient.patch(
-    `/admin/orders/${id}/status`,
-    { status },
-    { headers: { Authorization: `Bearer ${token}` } }
-  ).then((res) => res.data);
-
-export default apiClient;
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import Portfolio from './pages/Portfolio';
+import Contact from './pages/Contact';
+import OrderForm from './pages/OrderForm';
+import OrderSuccess from './pages/OrderSuccess';
+import OrderTracker from './pages/OrderTracker';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import './styles/globals.css';
+export default function App() { return <BrowserRouter><Routes><Route path="/" element={<Home />} /><Route path="/portfolio" element={<Portfolio />} /><Route path="/contact" element={<Contact />} /><Route path="/order" element={<OrderForm />} /><Route path="/order/success" element={<OrderSuccess />} /><Route path="/track" element={<OrderTracker />} /><Route path="/track/:orderId" element={<OrderTracker />} /><Route path="/admin" element={<AdminLogin />} /><Route path="/admin/dashboard" element={<AdminDashboard />} /><Route path="*" element={<Navigate to="/" />} /></Routes></BrowserRouter>; }

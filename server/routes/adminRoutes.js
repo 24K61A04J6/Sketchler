@@ -1,53 +1,37 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import bioRoutes from './routes/bioRoutes.js';
-import artworkRoutes from './routes/artworkRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
+import jwt from 'jsonwebtoken';
+import { body, validationResult } from 'express-validator';
+import Admin from '../models/Admin.js';
+import Artwork from '../models/Artwork.js';
+import Contact from '../models/Contact.js';
+import Order, { ORDER_STATUSES } from '../models/Order.js';
+import authMiddleware from '../middleware/auth.js';
 
-dotenv.config();
+const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret';
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sketchler';
-
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Connect to MongoDB
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log('MongoDB connection error:', err));
-
-// Routes
-app.use('/api/bio', bioRoutes);
-app.use('/api/artworks', artworkRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/admin', adminRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
+router.post('/login', [body('username').notEmpty(), body('password').notEmpty()], async (req, res) => {
+  const errors = validationResult(req); if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  const admin = await Admin.findOne({ username: req.body.username });
+  if (!admin || !(await admin.comparePassword(req.body.password))) return res.status(401).json({ message: 'Invalid credentials' });
+  res.json({ token: jwt.sign({ id: admin._id }, JWT_SECRET, { expiresIn: '7d' }), admin: { id: admin._id, username: admin.username, email: admin.email } });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong', error: err.message });
+router.post('/register', async (req, res) => {
+  try { const admin = await Admin.create(req.body); res.status(201).json({ message: 'Admin created successfully', id: admin._id }); }
+  catch (error) { res.status(400).json({ message: error.message }); }
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Endpoint not found' });
+router.post('/artworks', authMiddleware, async (req, res) => { try { res.status(201).json(await Artwork.create(req.body)); } catch (error) { res.status(400).json({ message: error.message }); } });
+router.put('/artworks/:id', authMiddleware, async (req, res) => { try { res.json(await Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })); } catch (error) { res.status(400).json({ message: error.message }); } });
+router.delete('/artworks/:id', authMiddleware, async (req, res) => { try { await Artwork.findByIdAndDelete(req.params.id); res.json({ message: 'Artwork deleted successfully' }); } catch (error) { res.status(400).json({ message: error.message }); } });
+router.get('/contacts', authMiddleware, async (_req, res) => res.json(await Contact.find().sort({ createdAt: -1 })));
+router.put('/contacts/:id', authMiddleware, async (req, res) => res.json(await Contact.findByIdAndUpdate(req.params.id, req.body, { new: true })));
+router.get('/orders', authMiddleware, async (_req, res) => res.json(await Order.find().sort({ createdAt: -1 })));
+router.patch('/orders/:id/status', authMiddleware, async (req, res) => {
+  if (!ORDER_STATUSES.includes(req.body.status)) return res.status(400).json({ message: 'Invalid order status' });
+  const order = await Order.findByIdAndUpdate(req.params.id, { orderStatus: req.body.status }, { new: true });
+  if (!order) return res.status(404).json({ message: 'Order not found' });
+  res.json(order);
 });
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+export default router;
