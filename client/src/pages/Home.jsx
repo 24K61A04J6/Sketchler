@@ -1,71 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ArtworkCard from '../components/ArtworkCard';
-import { getArtworks } from '../services/api';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const Home = () => {
-  const [artworks, setArtworks] = useState([]);
-  const [bio, setBio] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const artworksData = await getArtworks({ featured: true });
-        setArtworks(artworksData);
-      } catch (err) {
-        console.error('Error fetching artworks:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Sketchler</h1>
-            <p className="text-xl mb-8">Discover extraordinary artwork and creative talent</p>
-            <a href="/portfolio" className="btn btn-primary">Explore Portfolio</a>
-          </div>
-        </section>
+    <header className="bg-white shadow-sm ring-1 ring-slate-200/80">
+      <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="text-2xl font-black tracking-tight text-slate-900">🎨 Sketchler</Link>
 
-        {/* Featured Artworks */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-12 text-center">Featured Works</h2>
-            {loading ? (
-              <div className="text-center text-gray-500">Loading artworks...</div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {artworks.map((artwork) => (
-                  <ArtworkCard key={artwork._id} artwork={artwork} />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
+          <button
+            className="rounded-lg p-2 text-slate-700 md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Open menu"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
 
-        {/* Call to Action */}
-        <section className="bg-blue-50 py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-8">Get in Touch</h2>
-            <p className="text-gray-700 mb-8 max-w-2xl mx-auto">
-              Have a project in mind or want to collaborate? I'd love to hear from you!
-            </p>
-            <a href="/contact" className="btn btn-primary">Contact Me</a>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </>
+          <nav className={`${isOpen ? 'block' : 'hidden'} absolute left-0 right-0 top-16 bg-white p-4 shadow-md md:static md:block md:bg-transparent md:p-0 md:shadow-none`}>
+            <div className="flex flex-col gap-3 md:flex md:flex-row md:items-center md:gap-8">
+              <Link to="/" className="text-sm font-medium text-slate-700 transition hover:text-amber-700">Home</Link>
+              <Link to="/portfolio" className="text-sm font-medium text-slate-700 transition hover:text-amber-700">Portfolio</Link>
+              <Link to="/order" className="text-sm font-medium text-amber-700 transition hover:text-amber-800">Order a Portrait</Link>
+              <Link to="/track" className="text-sm font-medium text-slate-700 transition hover:text-amber-700">Track Order</Link>
+              <Link to="/contact" className="text-sm font-medium text-slate-700 transition hover:text-amber-700">Contact</Link>
+              <Link to="/admin" className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">Admin</Link>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
   );
 };
 
-export default Home;
+export default Header;

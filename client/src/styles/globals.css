@@ -1,43 +1,148 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-body {
-  @apply font-sans text-gray-800;
-}
+const samplePortraits = [
+  {
+    title: 'Family Portrait',
+    description: 'Warm, expressive sketches that preserve precious memories.',
+    accent: 'bg-amber-100 text-amber-800',
+  },
+  {
+    title: 'Couple Portrait',
+    description: 'Romantic and handcrafted portraits with a personal touch.',
+    accent: 'bg-rose-100 text-rose-800',
+  },
+  {
+    title: 'Pet Portrait',
+    description: 'A charming keepsake for the furry member of your family.',
+    accent: 'bg-emerald-100 text-emerald-800',
+  },
+];
 
-h1 {
-  @apply text-4xl font-bold;
-}
+const priceOptions = [
+  { label: 'A5', price: '₹1,499' },
+  { label: 'A4', price: '₹2,499' },
+  { label: 'A3', price: '₹3,499' },
+  { label: 'A2', price: '₹4,999' },
+];
 
-h2 {
-  @apply text-3xl font-semibold;
-}
+const Home = () => {
+  return (
+    <>
+      <Header />
+      <main className="bg-stone-50 text-slate-800">
+        <section className="bg-[radial-gradient(circle_at_top,_#fff7db,_#fef3c7_30%,_#f8fafc_100%)] py-20">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">Hand-drawn portraits</p>
+              <h1 className="max-w-xl text-5xl font-black tracking-tight text-slate-900 md:text-6xl">
+                Turn your memories into hand-drawn portraits.
+              </h1>
+              <p className="mt-6 max-w-xl text-lg text-slate-600">
+                Sketchler transforms your most meaningful photos into beautiful, custom artwork that feels personal, timeless, and worthy of display.
+              </p>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                <Link to="/order" className="rounded-full bg-slate-900 px-6 py-3 text-center text-base font-semibold text-white transition hover:bg-slate-700">
+                  Order a Portrait
+                </Link>
+                <Link to="/portfolio" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-center text-base font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100">
+                  View examples
+                </Link>
+              </div>
+            </div>
 
-h3 {
-  @apply text-2xl font-semibold;
-}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+                <div className="mb-4 h-56 rounded-2xl bg-[linear-gradient(135deg,#f5d0a9,#f8fafc)]" />
+                <p className="text-lg font-bold text-slate-900">Portrait Example</p>
+                <p className="text-sm text-slate-600">Realistic pencil texture</p>
+              </div>
+              <div className="space-y-4 pt-12">
+                <div className="rounded-3xl bg-slate-900 p-4 text-white shadow-sm">
+                  <div className="mb-3 h-28 rounded-2xl bg-[linear-gradient(135deg,#d1d5db,#fef3c7)]" />
+                  <p className="font-semibold">Family memories</p>
+                </div>
+                <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+                  <div className="mb-3 h-20 rounded-2xl bg-[linear-gradient(135deg,#fca5a5,#fef3c7)]" />
+                  <p className="font-semibold text-slate-900">Special occasions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-.btn {
-  @apply px-4 py-2 rounded font-semibold transition duration-200;
-}
+        <section className="mx-auto max-w-7xl px-4 py-20">
+          <div className="mb-10 text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Examples</p>
+            <h2 className="mt-3 text-4xl font-black text-slate-900">Your artwork/portrait examples</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {samplePortraits.map((portrait) => (
+              <div key={portrait.title} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div className={`mb-6 flex h-40 items-center justify-center rounded-2xl text-3xl font-black ${portrait.accent}`}>
+                  {portrait.title.slice(0, 1)}
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900">{portrait.title}</h3>
+                <p className="mt-3 text-slate-600">{portrait.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-.btn-primary {
-  @apply btn bg-blue-600 text-white hover:bg-blue-700;
-}
+        <section className="bg-slate-900 py-20 text-white">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="mb-10 text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-amber-300">How it works</p>
+              <h2 className="mt-3 text-4xl font-black">From photo to portrait in 4 simple steps</h2>
+            </div>
+            <div className="grid gap-6 md:grid-cols-4">
+              {['Choose portrait', 'Upload photo', 'Make payment', 'Receive artwork'].map((step, index) => (
+                <div key={step} className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-400 text-lg font-black text-slate-900">
+                    {index + 1}
+                  </div>
+                  <p className="text-xl font-bold">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-.btn-secondary {
-  @apply btn bg-gray-600 text-white hover:bg-gray-700;
-}
+        <section className="mx-auto max-w-7xl px-4 py-20">
+          <div className="mb-10 text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Pricing</p>
+            <h2 className="mt-3 text-4xl font-black text-slate-900">Choose portrait size</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-4">
+            {priceOptions.map((option) => (
+              <div key={option.label} className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                <div className="text-xl font-bold text-slate-900">{option.label}</div>
+                <div className="mt-4 text-3xl font-black text-amber-700">{option.price}</div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-.btn-outline {
-  @apply btn border-2 border-blue-600 text-blue-600 hover:bg-blue-50;
-}
+        <section className="bg-amber-50 py-20">
+          <div className="mx-auto max-w-4xl px-4 text-center">
+            <h2 className="text-4xl font-black text-slate-900">Ready to turn your memory into a masterpiece?</h2>
+            <p className="mt-4 text-lg text-slate-600">Place your order today and we’ll bring your reference photo to life as a custom hand-drawn portrait.</p>
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link to="/order" className="rounded-full bg-slate-900 px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-700">
+                Order a Portrait
+              </Link>
+              <Link to="/track" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100">
+                Track Order
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+};
 
-.card {
-  @apply bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow;
-}
-
-.input-field {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600;
-}
+export default Home;
